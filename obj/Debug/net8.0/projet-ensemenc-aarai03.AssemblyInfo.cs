@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("projet-ensemenc-aarai03")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+21b468842f4d7d7d3742b073ef9dc4175ffc8d83")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4e8129cd60835c48e4a18291c673d5cc5c2bb42f")]
 [assembly: System.Reflection.AssemblyProductAttribute("projet-ensemenc-aarai03")]
 [assembly: System.Reflection.AssemblyTitleAttribute("projet-ensemenc-aarai03")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
