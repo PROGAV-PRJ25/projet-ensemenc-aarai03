@@ -1,6 +1,6 @@
 // Enumérations pour les caractéristiques communes
     public enum TypePlante { Annual, Perennial, Weed, Ornamental, Commercial }
-    public enum TypeTerrain { Sand, Loam, Clay }
+    public enum TypeSol { Sand, Loam, Clay }
     public enum Saison { Spring, Summer, Autumn, Winter }
     public enum EtatSante { Healthy, Stressed, Diseased, Dying, Dead }
     public enum MeteoEvent { None, HeavyRain, Hailstorm, Drought, HeatWave, Frost }
@@ -69,7 +69,7 @@ public abstract class Plante
             return score / facteurs;
         }
 
-        protected virtual void UpdateHealth(double conditionScore)
+        protected virtual void MettreaJourSante(double conditionScore)
         {
             if (conditionScore >= 0.8)
                 Sante = EtatSante.Healthy;
@@ -100,7 +100,7 @@ public abstract class Plante
             HauteurActuelle += VitesseDeCroissance * FacteurCroissance;
             
             // Mise à jour de la santé
-            UpdateHealth(conditionScore);
+            MettreaJourSante(conditionScore);
             
             // Vérifier la fin de vie
             if (Age >= EsperanceVie)
@@ -108,6 +108,10 @@ public abstract class Plante
                 Sante = EtatSante.Dead;
             }
         }
+    public virtual bool PeutEtreRecolter()
+    {
+        return Sante == EtatSante.Healthy && Age >= EsperanceVie * 0.6;
+    }
 
 
 
