@@ -1,15 +1,17 @@
+public enum MeteoEvent {Pluie, Gel, Averse, VagueChaleur, Secheresse, None}
+
 public class Meteo
     {
         public double Temperature { get; set; }
-        public double EauDispo { get; set; } // de 0 à 1
+        public double Precipitation { get; set; } // de 0 à 1
         public double LumiereDispo { get; set; } // de 0 à 1
         public MeteoEvent EvenementActuel { get; set; }
 
-        public Meteo(double temp, double water, double light)
+        public Meteo(double temp, double precip, double lumiere)
         {
             Temperature = temp;
-            EauDispo = water;
-            LumiereDispo = light;
+            Precipitation = precip;
+            LumiereDispo = lumiere;
             EvenementActuel = MeteoEvent.None;
         }
     }

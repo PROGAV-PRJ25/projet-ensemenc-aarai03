@@ -1,140 +1,248 @@
-// Enumérations pour les caractéristiques communes
-    public enum TypePlante { Annual, Perennial, Weed, Ornamental, Commercial }
-    public enum TypeSol { Sand, Loam, Clay }
-    public enum Saison { Spring, Summer, Autumn, Winter }
-    public enum EtatSante { Healthy, Stressed, Diseased, Dying, Dead }
-    public enum MeteoEvent { None, HeavyRain, Hailstorm, Drought, HeatWave, Frost }
-    
-    public enum TypeIntru { None, Rabbit, Rodent, Bird, Snail, Insect }
-
-public abstract class Plante
+public class Carotte : Plante
 {
-    public string Nom {get; protected set;}
-    public TypePlante Type { get; protected set; }
-    public List<Saison> SaisonsPlantation { get; protected set; }
-    public bool Comestible {get; protected set;}
-    public bool EstVivace {get; protected set;}
-    public string TerrainPrefere {get; protected set;}
-    public List<string> Maladie {get; protected set;}
-    public List<string> Saisons {get; protected set;}
-    public float EspaceRequis {get; protected set;} // en cm²
-    public float VitesseDeCroissance {get; protected set;} // en cm par semaine
-    public float BesoinEau {get; protected set;} // en %
-    public float BesoinLumiere {get; protected set;} // en %
-    public int EsperanceVie {get; protected set;}
-    public int NBPousse {get; protected set;}
-     public EtatSante Sante { get; protected set; }
-    public (int min, int max) TemperaturePrefere {get; protected set;} // en °C
-    public int Age {get; protected set;} // en semaine
-    public double HauteurActuelle { get; protected set; } // en cm
-
-
-    protected Plante()
-        {
-            SaisonsPlantation = new List<Saison>();
-            Sante = EtatSante.Healthy;
-            Age = 0;
-            HauteurActuelle = 0.1; // début comme semis
-        }
-
-    protected virtual double CalculerConditionScore(Meteo meteo, Terrain typeSole)
-        {
-            double score = 0;
-            int facteurs= 0;
-
-            // Vérification du sol
-            if (typeSole.TypeSol == TerrainPrefere) score += 1.0;
-            else score += 0.5;
-            facteurs++;
-
-            // Vérification de l'eau
-            double waterDiff = Math.Abs(meteo.EauDispo - BesoinEau);
-            score += 1.0 - waterDiff;
-            facteurs++;
-
-            // Vérification de la lumière
-            double lightDiff = Math.Abs(meteo.LumiereDispo - BesoinLumiere);
-            score += 1.0 - lightDiff;
-            facteurs++;
-
-            // Vérification de la température
-            if (meteo.Temperature >= TemperaturePrefere.min && meteo.Temperature <= TemperaturePrefere.max)
-                score += 1.0;
-            else if (meteo.Temperature < TemperaturePrefere.min - 5 || meteo.Temperature > TemperaturePrefere.max + 5)
-                score += 0.2; // conditions extrêmes
-            else
-                score += 0.5; // conditions non idéales
-            facteurs++;
-
-            return score / facteurs;
-        }
-
-        protected virtual void MettreaJourSante(double conditionScore)
-        {
-            if (conditionScore >= 0.8)
-                Sante = EtatSante.Healthy;
-            else if (conditionScore >= 0.6)
-                Sante = EtatSante.Stressed;
-            else if (conditionScore >= 0.5)
-                Sante = EtatSante.Diseased;
-            else
-                Sante = EtatSante.Dying;
-        }
-
-
-    public virtual void Grandir(Meteo meteo, Terrain terrain, double FacteurSoin)
-        {
-            Age++;
-            
-            // Vérifier les conditions de croissance
-            double conditionScore = CalculerConditionScore(meteo, terrain);
-            
-            if (conditionScore < 0.5)
-            {
-                Sante = EtatSante.Dying;
-                return;
-            }
-
-            // Croissance en fonction des conditions
-            double FacteurCroissance = conditionScore * FacteurSoin;
-            HauteurActuelle += VitesseDeCroissance * FacteurCroissance;
-            
-            // Mise à jour de la santé
-            MettreaJourSante(conditionScore);
-            
-            // Vérifier la fin de vie
-            if (Age >= EsperanceVie)
-            {
-                Sante = EtatSante.Dead;
-            }
-        }
-    public virtual bool PeutEtreRecolter()
+    public Carotte() : base("Carotte", TypePlante.Comestible)
     {
-        return Sante == EtatSante.Healthy && Age >= EsperanceVie * 0.6;
+        SaisonsSemis = new List<Saison> { Saison.Printemps, Saison.Ete };
+        TerrainPrefere = "Terre";
+        Espacement = 5;
+        PlaceNecessaire = 25;
+        VitesseCroissance = 2.5;
+        BesoinEau = 0.7;
+        BesoinLuminosite = 0.8;
+        TemperatureIdeale = (15, 25);
+        MaladiesPossibles = new List<string> { "Mildiou", "Rouille" };
+        EsperanceVie = 12;
+        Production = 10;
     }
 
+    protected override double TailleMature()
+    {
+        return 20.0;
+    }
+}
 
+public class Tomate : Plante
+{
+    public Tomate() : base("Tomate", TypePlante.Comestible)
+    {
+        SaisonsSemis = new List<Saison> { Saison.Printemps };
+        TerrainPrefere = "Terre";
+        Espacement = 40;
+        PlaceNecessaire = 1600;
+        VitesseCroissance = 3.0;
+        BesoinEau = 0.8;
+        BesoinLuminosite = 0.9;
+        TemperatureIdeale = (18, 30);
+        MaladiesPossibles = new List<string> { "Mildiou", "Oïdium" };
+        EsperanceVie = 20;
+        Production = 30;
+    }
 
+    protected override double TailleMature()
+    {
+        return 100.0; // plantes de tomates plus grandes
+    }
+}
 
+public class Rose : Plante
+{
+    public Rose() : base("Rose", TypePlante.Ornementale)
+    {
+        SaisonsSemis = new List<Saison> { Saison.Printemps, Saison.Automne };
+        TerrainPrefere = "Argile";
+        Espacement = 50;
+        PlaceNecessaire = 2500;
+        VitesseCroissance = 1.5;
+        BesoinEau = 0.6;
+        BesoinLuminosite = 0.7;
+        TemperatureIdeale = (10, 28);
+        MaladiesPossibles = new List<string> { "Oïdium", "Taches noires" };
+        EsperanceVie = 260; // 5 ans
+        Production = 15;
+    }
+}
 
+public class Salade : Plante
+{
+    public Salade() : base("Salade", TypePlante.Comestible)
+    {
+        SaisonsSemis = new List<Saison> { Saison.Printemps, Saison.Automne };
+        TerrainPrefere = "Terre";
+        Espacement = 30;
+        PlaceNecessaire = 900;
+        VitesseCroissance = 2.0;
+        BesoinEau = 0.8;
+        BesoinLuminosite = 0.7;
+        TemperatureIdeale = (10, 20);
+        MaladiesPossibles = new List<string> { "Mildiou", "Pucerons" };
+        EsperanceVie = 8;
+        Production = 1; // Une salade par plant
+    }
+}
 
+public class PommeDeTerre : Plante
+{
+    public PommeDeTerre() : base("PommeDeTerre", TypePlante.Comestible)
+    {
+        SaisonsSemis = new List<Saison> { Saison.Printemps };
+        TerrainPrefere = "Terre";
+        Espacement = 40;
+        PlaceNecessaire = 1600;
+        VitesseCroissance = 1.5;
+        BesoinEau = 0.6;
+        BesoinLuminosite = 0.8;
+        TemperatureIdeale = (15, 25);
+        MaladiesPossibles = new List<string> { "Doryphore", "Mildiou" };
+        EsperanceVie = 20;
+        Production = 10; // Nombre de pommes de terre par plant
+    }
 
+    protected override double TailleMature()
+    {
+        return 60.0;
+    }
+}
 
+public class Tournesol : Plante
+{
+    public Tournesol() : base("Tournesol", TypePlante.Ornementale)
+    {
+        SaisonsSemis = new List<Saison> { Saison.Printemps };
+        TerrainPrefere = "Terre";
+        Espacement = 50;
+        PlaceNecessaire = 2500;
+        VitesseCroissance = 3.0;
+        BesoinEau = 0.5;
+        BesoinLuminosite = 1.0; // Beaucoup de lumière
+        TemperatureIdeale = (20, 30);
+        MaladiesPossibles = new List<string> { "Oïdium", "Pucerons" };
+        EsperanceVie = 16;
+        Production = 1; // Une fleur
+    }
 
-
-
-
-
-
-
-
-//(, pailler, arroser, traiter, semer telle ou telle graine, récolter un légume mûr, installer serre, une barrière, un pare-soleil…) 
-    public abstract void Désherber();
-    public abstract void Pailler();
-    public abstract void Arroser();
-    public abstract void Traiter();
-    public abstract void Semer();
-    public abstract void Recolter();
-    public abstract void Installer();
+    protected override double TailleMature()
+    {
+        return 200.0; // Très grand
+    }
 
 }
+
+public class Cactus : Plante
+{
+    public Cactus() : base("Cactus", TypePlante.Ornementale)
+    {
+        SaisonsSemis = new List<Saison> { Saison.Printemps, Saison.Ete };
+        TerrainPrefere = "Sable";
+        Espacement = 20;
+        PlaceNecessaire = 400;
+        VitesseCroissance = 0.5; // Croissance lente
+        BesoinEau = 0.2; // Besoin en eau faible
+        BesoinLuminosite = 0.9;
+        TemperatureIdeale = (25, 40);
+        MaladiesPossibles = new List<string> { "Pourriture" };
+        EsperanceVie = 520; // 10 ans
+        Production = 0; // Non récoltable
+    }
+
+    
+
+    public override int Recolter()
+    {
+        Console.WriteLine("Les cactus ne sont pas récoltables!");
+        return 0;
+    }
+}
+
+public class Bambou : Plante
+{
+    public Bambou() : base("Bambou", TypePlante.Comestible) // Ou un nouveau type Commerciale
+    {
+        SaisonsSemis = new List<Saison> { Saison.Printemps };
+        TerrainPrefere = "Terre";
+        Espacement = 100;
+        PlaceNecessaire = 10000;
+        VitesseCroissance = 5.0; // Croissance très rapide
+        BesoinEau = 0.8;
+        BesoinLuminosite = 0.7;
+        TemperatureIdeale = (15, 30);
+        MaladiesPossibles = new List<string>();
+        EsperanceVie = 260; // 5 ans
+        Production = 5; // Tiges de bambou
+    }
+
+    protected override double TailleMature()
+    {
+        return 500.0; // Très grand
+    }
+
+    
+
+    public override void Pousser(double qualiteTerrain, double eauDisponible, double luminosite, double temperature)
+    {
+        base.Pousser(qualiteTerrain, eauDisponible, luminosite, temperature);
+        
+        // Le bambou peut envahir d'autres terrains
+        if (Etat == EtatPlante.Mature && new Random().NextDouble() < 0.05)
+        {
+            Console.WriteLine("Le bambou s'étend à un terrain voisin!");
+            // Logique pour s'étendre...
+        }
+    }
+}
+
+public class PlanteMagique : Plante
+{
+    public PlanteMagique() : base("PlanteMagique", TypePlante.Imaginaire)
+    {
+        SaisonsSemis = new List<Saison> { Saison.Printemps, Saison.Automne };
+        TerrainPrefere = "Argile";
+        Espacement = 40;
+        PlaceNecessaire = 1600;
+        VitesseCroissance = 1.8;
+        BesoinEau = 0.7;
+        BesoinLuminosite = 0.5; // Peu de lumière
+        TemperatureIdeale = (10, 25);
+        MaladiesPossibles = new List<string> { "Malédiction", "Sort raté" };
+        EsperanceVie = 52; // 1 an
+        Production = 3; // Potions magiques
+    }
+
+    
+
+    
+}
+
+public class Mandragore : Plante
+{
+    public Mandragore() : base("Mandragore", TypePlante.Imaginaire)
+    {
+        SaisonsSemis = new List<Saison> { Saison.Automne };
+        TerrainPrefere = "Argile";
+        Espacement = 60;
+        PlaceNecessaire = 3600;
+        VitesseCroissance = 0.3; // Croissance très lente
+        BesoinEau = 0.6;
+        BesoinLuminosite = 0.3; // Ombre
+        TemperatureIdeale = (5, 15);
+        MaladiesPossibles = new List<string> { "Malédiction" };
+        EsperanceVie = 104; // 2 ans
+        Production = 1; // Très précieuse
+    }
+
+    protected override double TailleMature()
+    {
+        return 30.0;
+    }
+
+    
+
+    public override int Recolter()
+    {
+        if (Etat != EtatPlante.Recoltable) return 0;
+        
+        // La mandragore crie quand on la récolte
+        Console.WriteLine("AAAAAAAAAAH! (La mandragore pousse un cri perçant)");
+        return base.Recolter();
+    }
+}
+    
