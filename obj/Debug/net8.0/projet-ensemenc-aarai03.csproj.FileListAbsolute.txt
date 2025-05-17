@@ -1,0 +1,15 @@
+C:\Users\21266\Documents\GitHub\projet-ensemenc-aarai03\bin\Debug\net8.0\projet-ensemenc-aarai03.exe
+C:\Users\21266\Documents\GitHub\projet-ensemenc-aarai03\bin\Debug\net8.0\projet-ensemenc-aarai03.deps.json
+C:\Users\21266\Documents\GitHub\projet-ensemenc-aarai03\bin\Debug\net8.0\projet-ensemenc-aarai03.runtimeconfig.json
+C:\Users\21266\Documents\GitHub\projet-ensemenc-aarai03\bin\Debug\net8.0\projet-ensemenc-aarai03.dll
+C:\Users\21266\Documents\GitHub\projet-ensemenc-aarai03\bin\Debug\net8.0\projet-ensemenc-aarai03.pdb
+C:\Users\21266\Documents\GitHub\projet-ensemenc-aarai03\obj\Debug\net8.0\projet-ensemenc-aarai03.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\21266\Documents\GitHub\projet-ensemenc-aarai03\obj\Debug\net8.0\projet-ensemenc-aarai03.AssemblyInfoInputs.cache
+C:\Users\21266\Documents\GitHub\projet-ensemenc-aarai03\obj\Debug\net8.0\projet-ensemenc-aarai03.AssemblyInfo.cs
+C:\Users\21266\Documents\GitHub\projet-ensemenc-aarai03\obj\Debug\net8.0\projet-ensemenc-aarai03.csproj.CoreCompileInputs.cache
+C:\Users\21266\Documents\GitHub\projet-ensemenc-aarai03\obj\Debug\net8.0\projet-ensemenc-aarai03.sourcelink.json
+C:\Users\21266\Documents\GitHub\projet-ensemenc-aarai03\obj\Debug\net8.0\projet-ensemenc-aarai03.dll
+C:\Users\21266\Documents\GitHub\projet-ensemenc-aarai03\obj\Debug\net8.0\refint\projet-ensemenc-aarai03.dll
+C:\Users\21266\Documents\GitHub\projet-ensemenc-aarai03\obj\Debug\net8.0\projet-ensemenc-aarai03.pdb
+C:\Users\21266\Documents\GitHub\projet-ensemenc-aarai03\obj\Debug\net8.0\projet-ensemenc-aarai03.genruntimeconfig.cache
+C:\Users\21266\Documents\GitHub\projet-ensemenc-aarai03\obj\Debug\net8.0\ref\projet-ensemenc-aarai03.dll

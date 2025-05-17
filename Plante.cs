@@ -44,7 +44,7 @@ public abstract class Plante
     public int EsperanceVie { get; protected set; } // en semaines
     public int Production { get; protected set; } // nombre de fruits/légumes
     public EtatPlante Etat { get; protected set; }
-    public double Sante { get; protected set; } // de 0 à 1
+    public double Sante { get;  set; } // de 0 à 1
     public double Taille { get; protected set; } // en cm
     public int Age { get; protected set; } // en semaines
 
