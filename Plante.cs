@@ -47,6 +47,7 @@ public abstract class Plante
     public double Sante { get;  set; } // de 0 à 1
     public double Taille { get; protected set; } // en cm
     public int Age { get; protected set; } // en semaines
+    
 
     protected Plante(string nom, TypePlante type)
     {

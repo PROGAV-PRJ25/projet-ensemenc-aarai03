@@ -37,6 +37,11 @@ public abstract class Pays
 
     public abstract Meteo GenererMeteo(DateTime date);
     public abstract Evenement GenererEvenement();
+
+    internal double GetImpactMeteo(MeteoEvent evenementActuel)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public class France : Pays
@@ -60,7 +65,8 @@ public class France : Pays
     public override Meteo GenererMeteo(DateTime date)
     {
         Random rand = new Random();
-        
+        MeteoEvent evenement = MeteoEvent.None;
+
         // Variation saisonnière
         double baseTemp;
         double basePrecip;
@@ -112,7 +118,22 @@ public class France : Pays
             _ => " sec"
         };
         
-        return new Meteo(temp, precip, lumi);
+        return new Meteo(temp, precip, lumi, evenement, desc);
+    }
+
+    public virtual double GetImpactMeteo(MeteoEvent evenement)
+    {
+        return evenement switch
+        {
+            MeteoEvent.Gel => -0.3,
+            MeteoEvent.VagueChaleur => -0.2,
+            MeteoEvent.Secheresse => -0.4,
+            MeteoEvent.Orage => -0.1,
+            MeteoEvent.Grele => -0.5,
+            MeteoEvent.Pluie => 0.1,
+            MeteoEvent.Averse => 0.2,
+            _ => 0
+        };
     }
 
     public override Evenement GenererEvenement()

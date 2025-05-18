@@ -4,227 +4,280 @@ using System.Linq;
 
 public class Simulateur
 {
-    private Terrain Terrain;
-    private List<Plante> Catalogue;
-    private Pays Pays;
+    private Jardin Jardin { get; set; }
+    private List<Plante> Catalogue { get; set; }
+    private Magasin Magasin { get; set; }
 
-    public Simulateur(Terrain terrain, List<Plante> catalogue, Pays pays)
+    public Simulateur(Jardin jardin, List<Plante> catalogue)
     {
-        Terrain = terrain;
+        Jardin = jardin;
         Catalogue = catalogue;
-        Pays = pays;
-    }
-/*
-    public void AfficherCatalogueEtSemer()
-    {
-        Console.WriteLine("Catalogue de plantes disponibles :");
-        for (int i = 0; i < Catalogue.Count; i++)
-        {
-            Console.WriteLine($"{i + 1}. {Catalogue[i].Nom} (Type: {Catalogue[i].Type})");
-        }
-
-        Console.WriteLine("Combien de plantes voulez-vous semer ?");
-        if (int.TryParse(Console.ReadLine(), out int nombrePlantes) && nombrePlantes > 0)
-        {
-            for (int i = 0; i < nombrePlantes; i++)
-            {
-                Console.WriteLine($"Choisissez une plante à semer (numéro {i + 1}) :");
-                if (int.TryParse(Console.ReadLine(), out int index) && index > 0 && index <= Catalogue.Count)
-                {
-                    Plante nouvellePlante = CreerNouvellePlante(Catalogue[index - 1]);
-                    if (Terrain.CanPlant(plante))
-                    {
-                        Terrain.AddPlant(plante);
-                        Console.WriteLine($"{plante.Nom} a été semée avec succès !");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Pas assez d'espace pour cette plante.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Numéro invalide.");
-                }
-            }
-        }
-        Console.WriteLine("Appuyez sur une touche pour continuer...");
-        Console.ReadKey();
-    }
-*/
-    public void AfficherCatalogueEtSemer()
-    {
-        Console.WriteLine("Catalogue de plantes disponibles :");
-        for (int i = 0; i < Catalogue.Count; i++)
-        {
-            Console.WriteLine($"{i + 1}. {Catalogue[i].Nom} (Type: {Catalogue[i].Type})");
-        }
-
-        Console.WriteLine("Combien de plantes voulez-vous semer ?");
-        if (int.TryParse(Console.ReadLine(), out int nombrePlantes) && nombrePlantes > 0)
-        {
-            for (int i = 0; i < nombrePlantes; i++)
-            {
-                Console.WriteLine($"Choisissez une plante à semer (numéro {i + 1}) :");
-                if (int.TryParse(Console.ReadLine(), out int index) && index > 0 && index <= Catalogue.Count)
-                {
-                    // Création d'une nouvelle instance pour éviter les références partagées
-                    Plante nouvellePlante = CreerNouvellePlante(Catalogue[index - 1]);
-                    Terrain.AddPlant(nouvellePlante);
-                }
-                else
-                {
-                    Console.WriteLine("Numéro invalide.");
-                    i--; // Réessayer pour cette plante
-                }
-            }
-        }
-        Console.ReadKey();
+        Magasin = new Magasin();
     }
 
-    private Plante CreerNouvellePlante(Plante modele)
-    {
-        // Implémentez cette méthode pour cloner correctement chaque type de plante
-        switch (modele)
-        {
-            case Carotte c: return new Carotte();
-            case Tomate t: return new Tomate();
-            // ... autres types de plantes
-            default: return modele; // fallback
-        }
-    }
-    public void PasserTour(int semaine)
-    {
-        if (!Terrain.Plantes.Any())
-        {
-            Console.WriteLine("Aucune plante semée !");
-            Console.ReadKey();
-            return;
-        }
-
-        Console.WriteLine($"\n-------- Semaine N° {semaine} --------");
-
-        // Générer la météo
-        Meteo meteo = Pays.GenererMeteo(DateTime.Now.AddDays(semaine * 7));
-        Console.WriteLine($"Météo : Température = {meteo.Temperature}°C, Précipitation = {meteo.Precipitation * 100}%, Lumière = {meteo.LumiereDispo * 100}%");
-        Console.WriteLine($"Événement météo : {meteo.EvenementActuel}");
-
-        // Générer un événement aléatoire
-        Evenement evenement = Pays.GenererEvenement();
-        Console.WriteLine($"Événement : {evenement.Description} (Impact : {evenement.Impact})");
-
-        // Appliquer l'impact de l'événement sur les plantes
-        foreach (var plante in Terrain.Plantes.ToList())
-        {
-            plante.Sante += evenement.Impact * 0.01; // Convertir l'impact en pourcentage
-            if (plante.Sante <= 0)
-            {
-                plante.Mourir();
-            }
-        }
-
-        // Faire pousser les plantes en fonction de la météo
-        foreach (var plante in Terrain.Plantes.ToList())
-        {
-            plante.Pousser(Terrain.Qualite, meteo.Precipitation, meteo.LumiereDispo, meteo.Temperature);
-            if (plante.Etat == EtatPlante.Mort)
-            {
-                Terrain.RemovePlant(plante);
-                Console.WriteLine($"{plante.Nom} est morte et a été retirée du terrain.");
-            }
-            else if (plante.Etat == EtatPlante.Recoltable)
-            {
-                Console.WriteLine($"{plante.Nom} est prête à être récoltée !");
-            }
-        }
-
-        Console.WriteLine("Appuyez sur une touche pour continuer...");
-        Console.ReadKey();
-    }
-
-    public void RecolterPlantes()
-    {
-        foreach (var plante in Terrain.Plantes.ToList())
-        {
-            if (plante.Etat == EtatPlante.Recoltable)
-            {
-                int recolte = plante.Recolter();
-                Console.WriteLine($"Vous avez récolté {recolte} unités de {plante.Nom}.");
-                if (plante.Etat == EtatPlante.Mort)
-                {
-                    Terrain.RemovePlant(plante);
-                }
-            }
-        }
-        Console.WriteLine("Appuyez sur une touche pour continuer...");
-        Console.ReadKey();
-    }
-
-    public void AfficherEtatPlantes()
-    {
-        Console.WriteLine("État des plantes :");
-        foreach (var plante in Terrain.Plantes)
-        {
-            Console.WriteLine($"{plante.Nom} : État = {plante.Etat}, Santé = {plante.Sante * 100}%, Taille = {plante.Taille}cm, Âge = {plante.Age} semaines");
-        }
-        Console.WriteLine("Appuyez sur une touche pour continuer...");
-        Console.ReadKey();
-    }
-
-    public void TraiterPlantesMalades()
-    {
-        foreach (var plante in Terrain.Plantes)
-        {
-            if (plante.Etat == EtatPlante.Malade)
-            {
-                plante.Traiter();
-                Console.WriteLine($"{plante.Nom} a été traitée et est maintenant en meilleure santé.");
-            }
-        }
-        Console.WriteLine("Appuyez sur une touche pour continuer...");
-        Console.ReadKey();
-    }
-
-    public void AfficherMenu()
+    public void AfficherMenuPrincipal()
     {
         while (true)
         {
             Console.Clear();
-            Console.WriteLine("=== Menu Principal ===");
-            Console.WriteLine("1. Afficher le catalogue et semer des plantes");
+            Console.WriteLine("=== ENSemenC - Simulateur de Potager ===");
+            Console.WriteLine($"Date: {Jardin.DateCourante:dd/MM/yyyy}");
+            Console.WriteLine($"Localisation: {Jardin.Localisation.Nom}");
+            Console.WriteLine($"Argent: {Jardin.Argent}€");
+            Console.WriteLine("\n1. Gérer le jardin");
             Console.WriteLine("2. Passer une semaine");
-            Console.WriteLine("3. Récolter les plantes prêtes");
-            Console.WriteLine("4. Afficher l'état des plantes");
-            Console.WriteLine("5. Traiter les plantes malades");
-            Console.WriteLine("6. Quitter");
-            Console.Write("Choisissez une option : ");
+            Console.WriteLine("3. Accéder au magasin");
+            Console.WriteLine("4. Quitter");
 
-            string choix = Console.ReadLine();
+            Console.Write("\nChoix: ");
+            var choix = Console.ReadLine();
+
             switch (choix)
             {
                 case "1":
-                    AfficherCatalogueEtSemer();
+                    GererJardin();
                     break;
                 case "2":
-                    PasserTour(1); // Passer une semaine
+                    PasserSemaine();
                     break;
                 case "3":
-                    RecolterPlantes();
+                    Magasin.AfficherMenu(Jardin);
                     break;
                 case "4":
-                    AfficherEtatPlantes();
-                    break;
-                case "5":
-                    TraiterPlantesMalades();
-                    break;
-                case "6":
                     return;
                 default:
-                    Console.WriteLine("Option invalide.");
+                    Console.WriteLine("Choix invalide.");
                     break;
             }
         }
     }
+
+    private void GererJardin()
+    {
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine("=== GESTION DU JARDIN ===");
+            Jardin.AfficherEtat();
+            
+            if (Jardin.Animaux.Any())
+            {
+                Console.WriteLine("\nAnimaux présents:");
+                foreach (var animal in Jardin.Animaux)
+                {
+                    Console.WriteLine($"- {animal.Nom} {animal.GetSymbole()}");
+                }
+            }
+
+            Console.WriteLine("\nActions disponibles:");
+            Console.WriteLine("1. Semer des plantes");
+            Console.WriteLine("2. Récolter les plantes mûres");
+            Console.WriteLine("3. Traiter les plantes malades");
+            Console.WriteLine("4. EffrayerAnimaux");
+            Console.WriteLine("5. Retour");
+
+            Console.Write("\nChoix: ");
+            var choix = Console.ReadLine();
+
+            switch (choix)
+            {
+                case "1":
+                    SemerPlantes();
+                    break;
+                case "2":
+                    RecolterPlantes();
+                    break;
+                case "3":
+                    TraiterPlantesMalades();
+                    break;
+                case "4":
+                    EffrayerAnimaux();
+                    break;
+                case "5":
+                    return;
+                default:
+                    Console.WriteLine("Choix invalide.");
+                    break;
+            }
+
+            Console.WriteLine("\nAppuyez sur une touche pour continuer...");
+            Console.ReadKey();
+        }
+    }
+
+    private void EffrayerAnimaux()
+    {
+        Jardin.EffrayerAnimaux();
+        Console.WriteLine("\nAppuyez sur une touche pour continuer...");
+        Console.ReadKey();
+    }
+
+    private void SemerPlantes()
+    {
+        Console.WriteLine("\n=== SEMER DES PLANTES ===");
+        
+        // Afficher les semis disponibles
+        Console.WriteLine("\nSemis disponibles:");
+        foreach (var semis in Jardin.InventaireSemis)
+        {
+            if (semis.Value > 0)
+                Console.WriteLine($"- {semis.Key}: {semis.Value} graines");
+        }
+
+        if (Jardin.InventaireSemis.All(s => s.Value <= 0))
+        {
+            Console.WriteLine("\nVous n'avez plus de semis disponibles!");
+            Console.WriteLine("Visitez le magasin pour en acheter.");
+            return;
+        }
+
+        Console.Write("\nQuelle plante voulez-vous semer? (nom ou 'annuler'): ");
+        string choix = Console.ReadLine();
+        
+        if (choix.ToLower() == "annuler") return;
+        
+        if (!Jardin.InventaireSemis.ContainsKey(choix) || Jardin.InventaireSemis[choix] <= 0)
+        {
+            Console.WriteLine("Semis non disponible.");
+            return;
+        }
+        
+        // Choisir le terrain
+        Console.WriteLine("\nTerrains disponibles:");
+        foreach (var terrain1 in Jardin.Terrains)
+        {
+            double espaceOccupe = terrain1.Plantes.Sum(p => p.PlaceNecessaire);
+            double espaceDispo = terrain1.Surface * 10000 - espaceOccupe; // Conversion m² en cm²
+            Console.WriteLine($"- Terrain {terrain1.Id}: {terrain1.Surface}m² ({terrain1.TypeTerrain}), " + 
+                             $"Espace libre: {espaceDispo/10000:F2}m²");
+        }
+        
+        Console.Write("\nSur quel terrain? (numéro): ");
+        if (!int.TryParse(Console.ReadLine(), out int terrainId))
+        {
+            Console.WriteLine("Numéro invalide.");
+            return;
+        }
+        
+        var terrain = Jardin.Terrains.FirstOrDefault(t => t.Id == terrainId);
+        if (terrain == null)
+        {
+            Console.WriteLine("Terrain introuvable.");
+            return;
+        }
+        
+        // Créer la plante
+        Plante nouvellePlante = CreerNouvellePlante(choix);
+        if (nouvellePlante == null)
+        {
+            Console.WriteLine("Type de plante inconnu.");
+            return;
+        }
+
+        if (terrain.CanPlant(nouvellePlante))
+        {
+            terrain.AddPlant(nouvellePlante);
+            Jardin.InventaireSemis[choix]--;
+            Console.WriteLine($"{choix} semée avec succès sur le terrain {terrainId}!");
+        }
+        else
+        {
+            Console.WriteLine("Pas assez d'espace pour cette plante.");
+        }
+    }
+
+    private Plante CreerNouvellePlante(string typePlante)
+    {
+        return typePlante switch
+        {
+            "Carotte" => new Carotte(),
+            "Tomate" => new Tomate(),
+            "Rose" => new Rose(),
+            "Salade" => new Salade(),
+            "PommeDeTerre" => new PommeDeTerre(),
+            "Tournesol" => new Tournesol(),
+            "Cactus" => new Cactus(),
+            "Bambou" => new Bambou(),
+            "PlanteMagique" => new PlanteMagique(),
+            "Mandragore" => new Mandragore(),
+            
+        };
+    }
+
+    private void PasserSemaine()
+    {
+        Jardin.PasserSemaine();
+        
+        // Vérifier si des plantes sont prêtes à être récoltées
+        bool plantesRecoltables = Jardin.Terrains
+            .Any(t => t.Plantes.Any(p => p.Etat == EtatPlante.Recoltable));
+        
+        if (plantesRecoltables)
+        {
+            Console.WriteLine("\nATTENTION: Certaines plantes sont prêtes à être récoltées!");
+        }
+    }
+
+    private void RecolterPlantes()
+    {
+        int totalRecolte = 0;
+        
+        foreach (var terrain in Jardin.Terrains)
+        {
+            foreach (var plante in terrain.Plantes.ToList())
+            {
+                if (plante.Etat == EtatPlante.Recoltable)
+                {
+                    int quantite = plante.Recolter();
+                    totalRecolte += quantite;
+                    
+                    if (Jardin.InventaireRecoltes.ContainsKey(plante.Nom))
+                        Jardin.InventaireRecoltes[plante.Nom] += quantite;
+                    else
+                        Jardin.InventaireRecoltes[plante.Nom] = quantite;
+                    
+                    if (plante.Etat == EtatPlante.Mort)
+                        terrain.RemovePlant(plante);
+                    
+                    Console.WriteLine($"- {plante.Nom}: {quantite} unités récoltées");
+                }
+            }
+        }
+        
+        if (totalRecolte > 0)
+        {
+            Console.WriteLine($"\nTotal récolté: {totalRecolte} unités");
+        }
+        else
+        {
+            Console.WriteLine("\nAucune plante n'est prête à être récoltée.");
+        }
+    }
+
+    private void TraiterPlantesMalades()
+    {
+        int plantesTraitees = 0;
+        
+        foreach (var terrain in Jardin.Terrains)
+        {
+            foreach (var plante in terrain.Plantes)
+            {
+                if (plante.Etat == EtatPlante.Malade)
+                {
+                    plante.Traiter();
+                    plantesTraitees++;
+                    Console.WriteLine($"- {plante.Nom} a été traitée");
+                }
+            }
+        }
+        
+        if (plantesTraitees == 0)
+        {
+            Console.WriteLine("\nAucune plante malade à traiter.");
+        }
+        else
+        {
+            Console.WriteLine($"\nTotal plantes traitées: {plantesTraitees}");
+        }
+    }
 }
-
-

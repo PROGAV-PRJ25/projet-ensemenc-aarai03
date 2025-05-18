@@ -1,10 +1,6 @@
 ﻿
-var terrain = new TerrainTerre(1, 10) // 10 m²
-{
-    Qualite = 0.8,
-    RetentionEau = 0.7,
-    Drainage = 0.6
-};
+var france = new France();
+var jardin = new Jardin(france);
 
 
 
@@ -25,8 +21,8 @@ var catalogue = new List<Plante>
     new Mandragore()
 };
 
-var simulateur = new Simulateur(terrain, catalogue, new France());
-simulateur.AfficherMenu();
+var simulateur = new Simulateur(jardin, catalogue);
+simulateur.AfficherMenuPrincipal();
 
 // Création du simulateur
 
