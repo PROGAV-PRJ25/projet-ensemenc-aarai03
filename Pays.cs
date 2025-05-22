@@ -49,7 +49,7 @@ public class France : Pays
     public France() : base("France")
     {
         PlantesDisponibles.AddRange(new[] { "Carotte", "Tomate", "Rose", "Salade", "Pomme de terre" });
-        
+
         EvenementsPossibles.AddRange(new[]
         {
             new Evenement("Orage violent avec grêle!", TypeEvenement.Intempérie, -20),
@@ -62,6 +62,7 @@ public class France : Pays
         });
     }
 
+
     public override Meteo GenererMeteo(DateTime date)
     {
         Random rand = new Random();
@@ -70,7 +71,7 @@ public class France : Pays
         // Variation saisonnière
         double baseTemp;
         double basePrecip;
-        
+
         if (date.Month >= 3 && date.Month <= 5) // Printemps
         {
             baseTemp = 10 + rand.NextDouble() * 15; // 10-25°C
@@ -91,12 +92,12 @@ public class France : Pays
             baseTemp = -5 + rand.NextDouble() * 10; // -5 à +5°C
             basePrecip = 0.2 + rand.NextDouble() * 0.3; // 20-50%
         }
-        
+
         // Ajouter une variation aléatoire
         double temp = baseTemp + (rand.NextDouble() * 6 - 3); // ±3°C
         double precip = Math.Max(0, Math.Min(1, basePrecip + (rand.NextDouble() * 0.4 - 0.2))); // ±20%
         double lumi = 0.7 + rand.NextDouble() * 0.3; // 70-100%
-        
+
         string desc = temp switch
         {
             > 30 => "Canicule",
@@ -108,7 +109,7 @@ public class France : Pays
             > 0 => "Très froid",
             _ => "Gelée"
         };
-        
+
         desc += precip switch
         {
             > 0.8 => " avec pluies torrentielles",
@@ -117,7 +118,7 @@ public class France : Pays
             > 0.2 => " légèrement pluvieux",
             _ => " sec"
         };
-        
+
         return new Meteo(temp, precip, lumi, evenement, desc);
     }
 
@@ -142,5 +143,7 @@ public class France : Pays
         return EvenementsPossibles[rand.Next(EvenementsPossibles.Count)];
     }
 }
+
+
 
 
